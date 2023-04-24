@@ -32,85 +32,65 @@ public class TodoValidatorTest {
     }
 
     @Test
-    void validateAdd_shouldPass() throws TodoAlreadyExistsException, DueDateExpiredException {
-        // Arrange
+    void validateAdd_shouldPass() {
         TodoDTO todoDTO = new TodoDTO("Todo Title", "Todo Content", System.currentTimeMillis() + 100000L);
 
         when(todoRepository.existsByTitle(todoDTO.title())).thenReturn(false);
-
-        // Act & Assert
         assertDoesNotThrow(() -> todoValidate.validateAdd(todoDTO));
     }
 
     @Test
-    void validateAdd_shouldThrowTodoAlreadyExistsException() throws TodoAlreadyExistsException, DueDateExpiredException {
-        // Arrange
+    void validateAdd_shouldThrowTodoAlreadyExistsException() {
         TodoDTO todoDTO = new TodoDTO("Todo Title", "Todo Content", System.currentTimeMillis() + 100000L);
 
         when(todoRepository.existsByTitle(todoDTO.title())).thenReturn(true);
-
-        // Act & Assert
         assertThrows(TodoAlreadyExistsException.class, () -> todoValidate.validateAdd(todoDTO));
     }
 
     @Test
-    void validateAdd_shouldThrowDueDateExpiredException() throws TodoAlreadyExistsException, DueDateExpiredException {
-        // Arrange
+    void validateAdd_shouldThrowDueDateExpiredException() {
         TodoDTO todoDTO = new TodoDTO("Todo Title", "Todo Content", System.currentTimeMillis() - 100000L);
 
         when(todoRepository.existsByTitle(todoDTO.title())).thenReturn(false);
-
         assertThrows(DueDateExpiredException.class, () -> todoValidate.validateAdd(todoDTO));
     }
 
     @Test
     void givenValidInput_whenValidateUpdateStatus_thenNoExceptionThrown() {
-        // Arrange
         Integer id = 1;
         String status = Status.PENDING;
-        when(todoRepository.existsById(id)).thenReturn(true);
 
-        // Act & Assert
+        when(todoRepository.existsById(id)).thenReturn(true);
         assertDoesNotThrow(() -> todoValidate.validateUpdateStatus(id, status));
     }
 
     @Test
     void givenInvalidStatus_whenValidateUpdateStatus_thenBadRequestExceptionThrown() {
-        // Arrange
         Integer id = 1;
         String status = "INVALID";
-        when(todoRepository.existsById(id)).thenReturn(true);
 
-        // Act & Assert
+        when(todoRepository.existsById(id)).thenReturn(true);
         assertThrows(BadRequestException.class, () -> todoValidate.validateUpdateStatus(id, status));
     }
 
     @Test
     void givenNonExistentId_whenValidateUpdateStatus_thenResourceNotFoundExceptionThrown() {
-        // Arrange
         Integer id = 1;
         String status = Status.PENDING;
-        when(todoRepository.existsById(id)).thenReturn(false);
 
-        // Act & Assert
+        when(todoRepository.existsById(id)).thenReturn(false);
         assertThrows(ResourceNotFoundException.class, () -> todoValidate.validateUpdateStatus(id, status));
     }
 
     @Test
     public void validateDeleteById_shouldThrowResourceNotFoundException_whenTodoIdDoesNotExist() {
-        // Arrange
         when(todoRepository.existsById(anyInt())).thenReturn(false);
-
-        // Act & Assert
         assertThrows(ResourceNotFoundException.class, () -> todoValidate.validateDeleteById(1));
     }
 
     @Test
     public void validateDeleteById_shouldNotThrowException_whenTodoIdExists() {
-        // Arrange
         when(todoRepository.existsById(anyInt())).thenReturn(true);
-
-        // Act & Assert
         assertDoesNotThrow(() -> todoValidate.validateDeleteById(1));
     }
 
@@ -139,10 +119,8 @@ public class TodoValidatorTest {
 
     @Test
     void shouldThrowExceptionWhenInvalidStatus() {
-        // Arrange
         String status = "invalid status";
 
-        // Act + Assert
         assertThrows(BadRequestException.class, () -> todoValidate.validateCountByStatus(status));
     }
 }
