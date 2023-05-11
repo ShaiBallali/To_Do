@@ -1,8 +1,13 @@
 package com.shai.to_do.unit.controller;
 
+import com.shai.to_do.constants.Queries;
 import com.shai.to_do.constants.Status;
 import com.shai.to_do.controller.TodoController;
 import com.shai.to_do.dto.TodoDTO;
+import com.shai.to_do.dto.response.AddResponseDTO;
+import com.shai.to_do.dto.response.CountByStatusResponseDTO;
+import com.shai.to_do.dto.response.GetContentResponseDTO;
+import com.shai.to_do.dto.response.ResponseDTOFactory;
 import com.shai.to_do.entity.Todo;
 import com.shai.to_do.exception.BadRequestException;
 import com.shai.to_do.exception.DueDateExpiredException;
@@ -62,25 +67,29 @@ public class TodoControllerTest {
     @Test
     public void testAdd_ShouldReturnStatusOk_AndContent1_AndInvokeTodoService() throws Exception {
         TodoDTO todoDTO = new TodoDTO("title", "content", Instant.now().getEpochSecond());
-        when(todoService.add(any(TodoDTO.class))).thenReturn(1);
+        AddResponseDTO addResponseDTO = new AddResponseDTO();
+        addResponseDTO.setResult(1);
+        when(todoService.add(any(TodoDTO.class))).thenReturn(addResponseDTO);
         mockMvc.perform(post("/todo")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{ \"title\": \"title\", \"content\": \"content\", \"dueDate\": " + Instant.now().getEpochSecond() + " }")
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().string("1"));
+                .andExpect(jsonPath("$.result", is(1)));
         verify(todoService, times(1)).add(eq(todoDTO));
     }
 
     @Test
     public void testCountByStatus_ShouldReturnCount() throws Exception {
         final String status = Status.PENDING;
-        when(todoService.countByStatus(status)).thenReturn(1L);
+        CountByStatusResponseDTO countByStatusResponseDTO = new CountByStatusResponseDTO();
+        countByStatusResponseDTO.setResult(1L);
+        when(todoService.countByStatus(status)).thenReturn(countByStatusResponseDTO);
 
         mockMvc.perform(get("/todo/size")
                         .param("status", status))
                 .andExpect(status().isOk())
-                .andExpect(content().string("1"));
+                .andExpect(jsonPath("$.result", is(1)));
 
         verify(todoService, times(1)).countByStatus(status);
     }
@@ -103,11 +112,13 @@ public class TodoControllerTest {
 
     @Test
     public void testCountByStatus_ShouldCount() throws Exception {
-        when(todoService.countByStatus(Status.DONE)).thenReturn(3L);
+        CountByStatusResponseDTO countByStatusResponseDTO = new CountByStatusResponseDTO();
+        countByStatusResponseDTO.setResult(3L);
+        when(todoService.countByStatus(Status.DONE)).thenReturn(countByStatusResponseDTO);
 
         mockMvc.perform(get("/todo/size?status=DONE"))
                 .andExpect(status().isOk())
-                .andExpect(content().string("3"));
+                .andExpect(jsonPath("$.result", is(3)));
 
         verify(controllerAdvice, times(0))
                 .handleBadRequestException();
@@ -133,17 +144,19 @@ public class TodoControllerTest {
 
         List<Todo> todos = Arrays.asList(todo1, todo2);
 
-        when(todoService.getTodoContentByStatusSortedByField(Status.PENDING, Optional.empty())).thenReturn(todos);
+        GetContentResponseDTO getContentResponseDTO = new GetContentResponseDTO();
+        getContentResponseDTO.setResult(todos);
+
+        when(todoService.getTodoContentByStatusSortedByField(Status.PENDING, Optional.empty())).thenReturn(getContentResponseDTO);
 
         mockMvc.perform(get("/todo/content?status=PENDING"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].title", is("title1")))
-                .andExpect(jsonPath("$[0].content", is("description1")))
-                .andExpect(jsonPath("$[0].status", is(Status.PENDING)))
-                .andExpect(jsonPath("$[1].title", is("title2")))
-                .andExpect(jsonPath("$[1].content", is("description2")))
-                .andExpect(jsonPath("$[1].status", is(Status.PENDING)));
+                .andExpect(jsonPath("$.result[0].title", is("title1")))
+                .andExpect(jsonPath("$.result[0].content", is("description1")))
+                .andExpect(jsonPath("$.result[0].status", is(Status.PENDING)))
+                .andExpect(jsonPath("$.result[1].title", is("title2")))
+                .andExpect(jsonPath("$.result[1].content", is("description2")))
+                .andExpect(jsonPath("$.result[1].status", is(Status.PENDING)));
     }
 
 }
