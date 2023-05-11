@@ -1,6 +1,7 @@
 package com.shai.to_do.controller;
 
 import com.shai.to_do.dto.TodoDTO;
+import com.shai.to_do.dto.response.*;
 import com.shai.to_do.entity.Todo;
 import com.shai.to_do.exception.DueDateExpiredException;
 import com.shai.to_do.exception.BadRequestException;
@@ -28,29 +29,29 @@ public class TodoController {
     }
 
     @PostMapping
-    public Integer add(@RequestBody TodoDTO todoDTO) throws TodoAlreadyExistsException, DueDateExpiredException {
+    public AddResponseDTO add(@RequestBody TodoDTO todoDTO) throws TodoAlreadyExistsException, DueDateExpiredException {
         return todoService.add(todoDTO);
     }
 
     @GetMapping("/size")
-    public long countByStatus(@RequestParam String status) throws BadRequestException {
+    public CountByStatusResponseDTO countByStatus(@RequestParam String status) throws BadRequestException {
         return todoService.countByStatus(status);
     }
 
     @GetMapping("/content")
-    public List<Todo> getTodoContentByStatusSortedByField(@RequestParam String status,
-                                                          @RequestParam Optional<String> sortBy) throws BadRequestException {
+    public GetContentResponseDTO getTodoContentByStatusSortedByField(@RequestParam String status,
+                                                                     @RequestParam Optional<String> sortBy) throws BadRequestException {
         return todoService.getTodoContentByStatusSortedByField(status, sortBy);
     }
 
     @PutMapping
-    public String updateStatus(@RequestParam Integer id,
-                               @RequestParam String status) throws BadRequestException, ResourceNotFoundException {
+    public UpdateStatusResponseDTO updateStatus(@RequestParam Integer id,
+                                                @RequestParam String status) throws BadRequestException, ResourceNotFoundException {
         return todoService.updateStatus(id, status);
     }
 
     @DeleteMapping
-    public int deleteTodo(@RequestParam Integer id) throws ResourceNotFoundException {
+    public DeleteResponseDTO deleteTodo(@RequestParam Integer id) throws ResourceNotFoundException {
         return todoService.deleteById(id);
     }
 
