@@ -7,6 +7,8 @@ import com.shai.to_do.exception.DueDateExpiredException;
 import com.shai.to_do.exception.BadRequestException;
 import com.shai.to_do.exception.ResourceNotFoundException;
 import com.shai.to_do.exception.TodoAlreadyExistsException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,8 @@ public class ControllerAdvice {
 
     private final ResponseDTOFactory responseDTOFactory;
 
+    private static final Logger logger = LogManager.getLogger("todo-logger");
+
     public ControllerAdvice(ResponseDTOFactory responseDTOFactory) {
         this.responseDTOFactory = responseDTOFactory;
     }
@@ -28,6 +32,7 @@ public class ControllerAdvice {
     public ResponseEntity<ExceptionDTO> handleTodoAlreadyExistsException(TodoAlreadyExistsException ex) {
         ExceptionDTO exceptionDTO = (ExceptionDTO) responseDTOFactory.getResponseDTO(Queries.EXCEPTION);
         exceptionDTO.setErrorMessage(ex.getMessage());
+        logger.error(ex.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(exceptionDTO);
     }
 
@@ -35,6 +40,7 @@ public class ControllerAdvice {
     public ResponseEntity<ExceptionDTO> handleDueDateAlreadyPassedException(DueDateExpiredException ex) {
         ExceptionDTO exceptionDTO = (ExceptionDTO) responseDTOFactory.getResponseDTO(Queries.EXCEPTION);
         exceptionDTO.setErrorMessage(ex.getMessage());
+        logger.error(ex.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(exceptionDTO);
     }
 
@@ -47,6 +53,7 @@ public class ControllerAdvice {
     public ResponseEntity<ExceptionDTO> handleResourceNotFoundException(ResourceNotFoundException ex) {
         ExceptionDTO exceptionDTO = (ExceptionDTO) responseDTOFactory.getResponseDTO(Queries.EXCEPTION);
         exceptionDTO.setErrorMessage(ex.getMessage());
+        logger.error(ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionDTO);
     }
 }

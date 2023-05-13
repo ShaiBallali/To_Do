@@ -12,4 +12,8 @@ public class Resources {
     public static final String UPDATE_STATUS = BASE_URL;
 
     public static final String DELETE_TODO = BASE_URL;
+
+    public static final String GET_LOGGER_LEVEL = "/logs/level";
+
+    public static final String SET_LOGGER_LEVEL = "/logs/level";
 }

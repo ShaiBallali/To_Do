@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn" monitorInterval="5">
+
+    <Appenders>
+        <File name="RequestsAppender" fileName="logs/requests.log" append="true">
+            <PatternLayout>
+                <Pattern>%d{dd-MM-yyyy HH:mm:ss.sss} %p: %msg | request #%X{requestCounter} %n</Pattern>
+            </PatternLayout>
+        </File>
+
+        <File name="TodosAppender" fileName="logs/todos.log" append="true">
+            <PatternLayout>
+                <Pattern>%d{dd-MM-yyyy HH:mm:ss.sss} %p: %msg | request #%X{requestCounter} %n</Pattern>
+            </PatternLayout>
+        </File>
+
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout>
+                <Pattern>%d{dd-MM-yyyy HH:mm:ss.sss} %p: %msg | request #%X{requestCounter} %n</Pattern>
+            </PatternLayout>
+        </Console>
+    </Appenders>
+
+    <Loggers>
+
+        <logger name="request-logger" level="INFO" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="RequestsAppender"/>
+        </logger>
+
+        <logger name="todo-logger" level="INFO" additivity="false">
+            <AppenderRef ref="TodosAppender"/>
+        </logger>
+
+        <Root level="INFO">
+            <AppenderRef ref="Console"/>
+        </Root>
+
+    </Loggers>
+</Configuration>

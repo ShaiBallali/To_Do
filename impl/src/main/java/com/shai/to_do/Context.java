@@ -1,6 +1,7 @@
 package com.shai.to_do;
 
 import lombok.Setter;
+import org.apache.logging.log4j.ThreadContext;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -20,9 +21,13 @@ public class Context {
         return idCounter;
     }
 
+    public int getIdCounter() {
+        return idCounter;
+    }
     public void initLogsInfo() {
         setCurrentRequestStartTime(System.currentTimeMillis());
         incrementRequestCounter();
+        ThreadContext.put("requestCounter", String.valueOf(requestCounter));
     }
 
     private void incrementRequestCounter() {
